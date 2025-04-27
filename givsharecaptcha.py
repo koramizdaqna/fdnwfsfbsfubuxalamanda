@@ -215,5 +215,7 @@ if machine_code in hash_values_list:
         except Exception as e:
             print("error:  ", e)
             continue
+else:
+    print("Kodni sotib olish uchun @Enshteyn40 ga murojat qiling")
                         
 
