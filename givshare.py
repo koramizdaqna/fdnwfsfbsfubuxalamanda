@@ -1,6 +1,9 @@
 import os
 import csv
-
+import csv
+from telethon.sync import TelegramClient
+from licensing.models import *s
+from licensing.methods import Key, Helpers
 phone_path = r"/storage/emulated/0/giv/captcha2.csv"
 pc_path = r"C:\join\captcha2.csv"
 
@@ -50,10 +53,6 @@ print(machine_code)
 # Mashina kodini tekshirish
 if machine_code in hash_values_list:
     print("Tabriklayman")
-    import csv
-    from telethon.sync import TelegramClient
-    from licensing.models import *
-    from licensing.methods import Key, Helpers
     from telethon.sync import TelegramClient
     
     from urllib.parse import unquote
