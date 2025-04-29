@@ -1,6 +1,7 @@
 import os
 import csv
-
+from licensing.models import *
+from licensing.methods import Key, Helpers
 phone_path = r"/storage/emulated/0/giv/captcha2.csv"
 pc_path = r"C:\join\captcha2.csv"
 
