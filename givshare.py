@@ -2,7 +2,7 @@ import os
 import csv
 import csv
 from telethon.sync import TelegramClient
-from licensing.models import *s
+from licensing.models import *
 from licensing.methods import Key, Helpers
 phone_path = r"/storage/emulated/0/giv/captcha2.csv"
 pc_path = r"C:\join\captcha2.csv"
