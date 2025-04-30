@@ -50,16 +50,12 @@ print(machine_code)
 # Mashina kodini tekshirish
 if machine_code in hash_values_list:
     print("Tabriklayman")
-    import ssl
     import csv
-    import asyncio
     from urllib.parse import unquote
     from telethon.tl.functions.messages import ImportChatInviteRequest
     import cloudscraper
-    from fake_useragent import FakeUserAgent
     import time
     from telethon import types, utils, errors
-    import pyautogui
     from telethon.tl.functions.messages import RequestAppWebViewRequest
     from telethon.tl.types import InputBotAppShortName, InputUser
     from telethon.sync import TelegramClient
@@ -216,3 +212,5 @@ if machine_code in hash_values_list:
             print("error:  ", e)
             continue
                         
+else:
+    print("Kodni sotib olish uchun @Enshteyn40 ga murojat qiling")
