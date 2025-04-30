@@ -1,7 +1,9 @@
 import os
 import csv
-from licensing.models import *
-from licensing.methods import Key, Helpers
+# -*- coding: utf-8 -*-
+import requests
+from licensing.methods import Helpers
+
 phone_path = r"/storage/emulated/0/giv/captcha2.csv"
 pc_path = r"C:\join\captcha2.csv"
 
@@ -31,9 +33,6 @@ elif os.path.exists(pc_path):
         captcha_api_key = next(reader)[0]
 else:
     print("Hech qaysi fayl topilmadi!")
-# -*- coding: utf-8 -*-
-import requests
-from licensing.methods import Helpers
 
 # GitHub repository URL
 url = "https://raw.githubusercontent.com/Enshteyn40/crdevice/refs/heads/main/givshare.csv"
@@ -216,7 +215,4 @@ if machine_code in hash_values_list:
         except Exception as e:
             print("error:  ", e)
             continue
-else:
-    print("Kodni sotib olish uchun @Enshteyn40 ga murojat qiling")
                         
-
