@@ -53,6 +53,7 @@ print(machine_code)
 # Mashina kodini tekshirish
 if machine_code in hash_values_list:
     print("Tabriklayman")
+    print("Yangilangan vaqti 02.06.2025")
     from telethon.sync import TelegramClient
     
     from urllib.parse import unquote
