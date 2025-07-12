@@ -43,11 +43,13 @@ with open(portal_csv, 'r', encoding='utf-8') as f:
     for row in csv.reader(f):
         if not row: continue
         raw = row[0].strip()
-        if raw.startswith("gwr_"):
-            real_id = raw[4:].split("_")[0]
+        if raw.startswith("gwr_") or raw.startswith("gw_"):
+            # ikkisini ham hisobga oladi
+            real_id = raw.split("_", 1)[1].split("_")[0]
             giv_ids_ozim.append(real_id)
 
 print(colored(f"✅ HAQIQIYPORTAL.csv — {len(giv_ids_ozim)} ta ID o‘qildi", "blue"))
+
 
 
 # 📄 HAQIQIYPORTALsoni.csv
