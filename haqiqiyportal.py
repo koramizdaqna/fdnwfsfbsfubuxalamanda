@@ -133,7 +133,10 @@ async def process_account(phone, idx):
 
             # 📄 Requirements
             r = requests.get(f"https://portals-market.com/api/giveaways/{giveaway_code}/requirements", headers=headers, timeout=10)
-            if r.status_code != 200: continue
+            if r.status_code != 200: 
+                print(colored(f"[{giveaway_code}] ❌ Status: {r.status_code}", "red"))
+                print(colored("Giveaway skip qilinayabdi", "red"))
+                continue
             req = r.json()
 
             if req["is_already_participating"]:
