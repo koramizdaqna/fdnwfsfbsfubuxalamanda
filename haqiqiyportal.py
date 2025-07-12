@@ -21,7 +21,7 @@ if machine_code not in requests.get(url).text.splitlines():
     print(colored(f"Kodni aktivlashtirish uchun @Enshteyn40 ga murojat qiling", "magenta"))
     sys.exit()
 
-print(colored("✅ Kod aktiv. Oxirgi yangilanish: 13.07.2025 12:03 AM", "magenta"))
+print(colored("✅ Kod aktiv. Oxirgi yangilanish: 13.07.2025 12:41 AM", "magenta"))
 
 # 📄 fayllarni tekshirish va yaratish
 def ensure_csv(filepath):
