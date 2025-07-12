@@ -21,7 +21,7 @@ if machine_code not in requests.get(url).text.splitlines():
     print(colored(f"Kodni aktivlashtirish uchun @Enshteyn40 ga murojat qiling", "magenta"))
     sys.exit()
 
-print(colored("✅ Kod aktiv. Oxirgi yangilanish: 13.07.2025 12:41 AM", "magenta"))
+print(colored("✅ Kod aktiv. Oxirgi yangilanish: 13.07.2025 12:56 AM", "magenta"))
 
 # 📄 fayllarni tekshirish va yaratish
 def ensure_csv(filepath):
@@ -41,12 +41,20 @@ ensure_csv(portal_csv)
 giv_ids_ozim = []
 with open(portal_csv, 'r', encoding='utf-8') as f:
     for row in csv.reader(f):
-        if not row: continue
+        if not row:
+            continue
         raw = row[0].strip()
+        if not raw:
+            continue
+
+        # 🚀 Agar gwr_ yoki gw_ bilan boshlansa
         if raw.startswith("gwr_") or raw.startswith("gw_"):
-            # ikkisini ham hisobga oladi
             real_id = raw.split("_", 1)[1].split("_")[0]
-            giv_ids_ozim.append(real_id)
+        else:
+            # 🚀 Hech qanday prefiks bo‘lmasa, o‘sha o‘zi
+            real_id = raw
+
+        giv_ids_ozim.append(real_id)
 
 print(colored(f"✅ HAQIQIYPORTAL.csv — {len(giv_ids_ozim)} ta ID o‘qildi", "blue"))
 
