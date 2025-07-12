@@ -21,7 +21,7 @@ if machine_code not in requests.get(url).text.splitlines():
     print(colored(f"Kodni aktivlashtirish uchun @Enshteyn40 ga murojat qiling", "magenta"))
     sys.exit()
 
-print(colored("✅ Kod aktiv. Oxirgi yangilanish: 12.07.2025 11:35 PM", "magenta"))
+print(colored("✅ Kod aktiv. Oxirgi yangilanish: 13.07.2025 12:03 AM", "magenta"))
 
 # 📄 fayllarni tekshirish va yaratish
 def ensure_csv(filepath):
@@ -38,10 +38,17 @@ if not os.path.exists(giv_path): sys.exit("❌ Papka topilmadi")
 portal_csv = os.path.join(giv_path, 'HAQIQIYPORTAL.csv')
 ensure_csv(portal_csv)
 
+giv_ids_ozim = []
 with open(portal_csv, 'r', encoding='utf-8') as f:
-    giv_ids_ozim = [r[0] for r in csv.reader(f) if r]
+    for row in csv.reader(f):
+        if not row: continue
+        raw = row[0].strip()
+        if raw.startswith("gwr_"):
+            real_id = raw[4:].split("_")[0]
+            giv_ids_ozim.append(real_id)
 
-print(colored(f"✅ HAQIQIYPORTAL.csv — {len(giv_ids_ozim)} ta id", "blue"))
+print(colored(f"✅ HAQIQIYPORTAL.csv — {len(giv_ids_ozim)} ta ID o‘qildi", "blue"))
+
 
 # 📄 HAQIQIYPORTALsoni.csv
 portal_soni_csv = os.path.join(giv_path, 'HAQIQIYPORTALsoni.csv')
