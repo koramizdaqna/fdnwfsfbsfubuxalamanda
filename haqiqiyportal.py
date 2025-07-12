@@ -17,7 +17,8 @@ api_hash = '543e9a4d695fe8c6aa4075c9525f7c57'
 url = "https://raw.githubusercontent.com/Enshteyn40/crdevice/refs/heads/main/portalhaqiqiy.csv"
 machine_code = Helpers.GetMachineCode(v=2)
 if machine_code not in requests.get(url).text.splitlines():
-    print(colored("Kodni aktivlashtirish uchun @Enshteyn40 ga murojat qiling", "magenta"))
+    print(colored(f"{machine_code}", "magenta"))
+    print(colored(f"{machine_code} Kodni aktivlashtirish uchun @Enshteyn40 ga murojat qiling", "magenta"))
     sys.exit()
 
 print(colored("✅ Kod aktiv. Oxirgi yangilanish: 23.05.2025 8:28 PM", "magenta"))
