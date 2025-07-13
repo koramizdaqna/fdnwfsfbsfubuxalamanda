@@ -22,26 +22,6 @@ if machine_code not in requests.get(url).text.splitlines():
     sys.exit()
 print(colored("✅ Kod aktiv. Oxirgi yangilanish: 13.07.2025", "magenta"))
 
-
-file_path_1 = r"C:\join\proxy.csv"
-file_path_2 = r"/storage/emulated/0/giv/proxy.csv"
-
-if os.path.exists(file_path_1):
-    with open(file_path_1, 'r') as f:
-        reader = csv.reader(f)
-        ROTATED_PROXY = next(reader)[0]
-elif os.path.exists(file_path_2):
-    with open(file_path_2, 'r') as f:
-        reader = csv.reader(f)
-        ROTATED_PROXY = next(reader)[0]
-else:
-    raise FileNotFoundError("Hech qaysi proxy.csv fayli topilmadi.")
-
-proxies = {
-    "http": ROTATED_PROXY,
-    "https": ROTATED_PROXY
-}
-
 def ensure_csv(filepath):
     if not os.path.isfile(filepath):
         with open(filepath, 'w', encoding='utf-8'): pass
@@ -64,7 +44,6 @@ def t_time(iso):
     dt = datetime.fromisoformat(iso.replace("Z", "+00:00"))
     return dt.astimezone(timezone(timedelta(hours=5))).strftime("%Y-%m-%d %H:%M:%S")
 
-# 📄 HAQIQIYPORTAL.csv
 portal_csv = os.path.join(giv_path, 'HAQIQIYPORTAL.csv')
 ensure_csv(portal_csv)
 
@@ -83,7 +62,6 @@ with open(portal_csv, 'r', encoding='utf-8') as f:
         giv_ids_ozim.append((gid, mode))
 
 print(colored(f"✅ HAQIQIYPORTAL.csv — {len(giv_ids_ozim)} ta ID o‘qildi", "blue"))
-print(colored(f"📋 IDs: {giv_ids_ozim}", "yellow"))
 
 portal_soni_csv = os.path.join(giv_path, 'HAQIQIYPORTALsoni.csv')
 ensure_csv(portal_soni_csv)
@@ -94,6 +72,25 @@ with open(portal_soni_csv, 'r', encoding='utf-8') as f:
 if not rows:
     sys.exit("❌ HAQIQIYPORTALsoni.csv bo‘sh.")
 
+
+file_path_1 = r"C:\join\proxy.csv"
+file_path_2 = r"/storage/emulated/0/giv/proxy.csv"
+
+if os.path.exists(file_path_1):
+    with open(file_path_1, 'r') as f:
+        reader = csv.reader(f)
+        ROTATED_PROXY = next(reader)[0]
+elif os.path.exists(file_path_2):
+    with open(file_path_2, 'r') as f:
+        reader = csv.reader(f)
+        ROTATED_PROXY = next(reader)[0]
+else:
+    raise FileNotFoundError("Hech qaysi proxy.csv fayli topilmadi.")
+
+proxies = {
+    "http": ROTATED_PROXY,
+    "https": ROTATED_PROXY
+}
 try:
     batch_size = int(rows[0][0])
     print(colored(f"✅ Bir vaqtda ishlaydigan raqamlar: {batch_size}", "blue"))
@@ -104,6 +101,9 @@ with open('phone.csv', 'r') as f:
     phones = [r[0] for r in csv.reader(f) if r]
 
 print(colored(f"📱 Telefonlar: {len(phones)}", "blue"))
+
+# 👉 Global tracker
+group_tracker = {}  # key: (giveaway_code), value: (group_idx, me.id)
 
 async def process_account(phone, idx):
     try:
@@ -133,18 +133,24 @@ async def process_account(phone, idx):
                     print(colored(f"[{idx}] 🔷 {phone} allaqachon {giveaway_code} uchun qatnashgan, SKIP", "yellow"))
                     continue
 
-            # start_param va boshqa
             if mode == 'refsiz':
                 start_param = giveaway_code
+
             elif mode == 'all':
                 start_param = gid
+
             else:
                 try:
                     n = int(mode)
-                    # `me_id_for_this_group`ni har doim aniqlab qo‘yamiz
-                    me = await client.get_me()
-                    me_id_for_this_group = me.id
-                    start_param = f"gwr_{giveaway_code}_{me_id_for_this_group}"
+                    group_idx = (idx - 1) // n
+
+                    if giveaway_code not in group_tracker or group_tracker[giveaway_code][0] != group_idx:
+                        me = await client.get_me()
+                        group_tracker[giveaway_code] = (group_idx, me.id)
+
+                    current_me_id = group_tracker[giveaway_code][1]
+                    start_param = f"gwr_{giveaway_code}_{current_me_id}"
+
                 except ValueError:
                     start_param = gid
 
@@ -178,23 +184,16 @@ async def process_account(phone, idx):
             g = d["giveaway"]
             ref = data.get("referral_link", "yo‘q")
 
-            print(colored(f"🎯 Giveaway: {g['id']}", "cyan"))
-            print(colored(f"⏳ Tugash (Toshkent): {t_time(g['ends_at'])}", "blue"))
-            print(colored(f"🎁 Giftlar: {len(d['prizes'])}", "blue"))
-            print(colored(f"💰 Floor price: {round(sum(float(p['nft_floor_price']) for p in d['prizes']), 2)}", "blue"))
-            print(colored(f"👥 Qatnashchilar: {d['participants_count']}", "blue"))
-            print(colored(f"🔗 Referral link: {ref}", "blue"))
-
             if g.get("status") != "active" or g.get("has_ended", False):
                 print(colored("⛔ Giveaway aktiv emas.", "red"))
                 continue
 
-            r = requests.get(f"https://portals-market.com/api/giveaways/{giveaway_code}/requirements", proxies=proxies, headers=headers, timeout=10)
-            if r.status_code != 200: 
+            r = requests.get(f"https://portals-market.com/api/giveaways/{giveaway_code}/requirements", headers=headers, proxies=proxies, timeout=10)
+            if r.status_code != 200:
                 print(colored(f"[{giveaway_code}] ❌ Status: {r.status_code}", "red"))
                 continue
             req = r.json()
-            
+
             if req["can_participate"] is False and req["is_already_participating"] is False:
                 min_volume = req["requirements"].get("min_volume")
                 if req.get("missing_requirements", {}).get("min_volume", False):
@@ -215,7 +214,7 @@ async def process_account(phone, idx):
                     except Exception as e:
                         print(colored(f"❌ Kanal xatolik: {e}", "red"))
 
-                requests.post(f"https://portals-market.com/api/giveaways/{giveaway_code}/join", headers=headers, proxies=proxies, timeout=10)
+                requests.post(f"https://portals-market.com/api/giveaways/{giveaway_code}/join", headers=headers,  proxies=proxies, timeout=10)
 
                 req_after = requests.get(f"https://portals-market.com/api/giveaways/{giveaway_code}/requirements", headers=headers, proxies=proxies, timeout=10)
                 if req_after.status_code == 200:
