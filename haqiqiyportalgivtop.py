@@ -22,7 +22,7 @@ def parse_time(iso_str):
     return dt.strftime('%Y-%m-%d %H:%M:%S')
 
 # 🔒 Aktivatsiya tekshirish
-url = "https://raw.githubusercontent.com/Enshteyn40/crdevice/refs/heads/main/portal.csv"
+url = "https://raw.githubusercontent.com/Enshteyn40/crdevice/refs/heads/main/portalhaqiqiy.csv"
 response = requests.get(url)
 hash_values_list = [line.strip() for line in response.text.splitlines()]
 machine_code = Helpers.GetMachineCode(v=2)
