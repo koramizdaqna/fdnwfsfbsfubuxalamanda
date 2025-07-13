@@ -10,6 +10,7 @@ from telethon.tl.types import InputBotAppShortName
 from datetime import datetime
 import os
 import asyncio
+from telethon import utils, TelegramClient
 
 def color(text, color_code):
     color_map = {
@@ -52,11 +53,11 @@ if not os.path.exists(winners_filename):
         writer = csv.writer(csvfile)
         writer.writerow(["Phone", "Jami Floor Price", "NFT Nomi/Nomlari"])
 
-async def process_phone(phone):
-    print(color(f"📲 Foydalaniladigan raqam: {phone}", "green"))
+async def process_phone(parsed_phone):
+    print(color(f"📲 Foydalaniladigan raqam: {parsed_phone}", "green"))
 
-    client = TelegramClient(f"sessions/{phone}", api_id, api_hash)
-    await client.start(phone)
+    client = TelegramClient(f"sessions/{parsed_phone}", api_id, api_hash)
+    await client.start(parsed_phone)
     await client(UpdateStatusRequest(offline=False))
 
     bot_entity = await client.get_entity("@portals")
@@ -115,14 +116,15 @@ async def process_phone(phone):
         # Yutgan raqamlarni batafsil yozib qo'yish
         with open(winners_filename, "a", newline="", encoding="utf-8") as csvfile:
             writer = csv.writer(csvfile)
-            writer.writerow([phone, floor_total, ", ".join(nft_names)])
+            writer.writerow([parsed_phone, floor_total, ", ".join(nft_names)])
 
     await client.disconnect()
 
 async def main():
     for phone in phlist:
+        parsed_phone = utils.parse_phone(phone)
         try:
-            await process_phone(phone)
+            await process_phone(parsed_phone)
         except Exception as e:
             print(color(f"⚠️ {phone} da xatolik: {e}", "red"))
 
