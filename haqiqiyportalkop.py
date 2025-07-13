@@ -23,8 +23,8 @@ if machine_code not in requests.get(url).text.splitlines():
 print(colored("✅ Kod aktiv. Oxirgi yangilanish: 13.07.2025", "magenta"))
 
 
-file_path_1 = r"C:\join\proxyglob.csv"
-file_path_2 = r"/storage/emulated/0/giv/proxyglob.csv"
+file_path_1 = r"C:\join\proxy.csv"
+file_path_2 = r"/storage/emulated/0/giv/proxy.csv"
 
 if os.path.exists(file_path_1):
     with open(file_path_1, 'r') as f:
