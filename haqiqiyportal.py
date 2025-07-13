@@ -121,9 +121,9 @@ async def process_account(phone, idx):
             else:
                 try:
                     n = int(mode)
-                    if ((idx - 1) % n) == 0:
-                        me = await client.get_me()
-                        me_id_for_this_group = me.id
+                    # `me_id_for_this_group`ni har doim aniqlab qo‘yamiz
+                    me = await client.get_me()
+                    me_id_for_this_group = me.id
                     start_param = f"gwr_{giveaway_code}_{me_id_for_this_group}"
                 except ValueError:
                     start_param = gid
