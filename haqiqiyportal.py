@@ -169,6 +169,15 @@ async def process_account(phone, idx):
                 print(colored(f"[{giveaway_code}] ❌ Status: {r.status_code}", "red"))
                 continue
             req = r.json()
+            
+            if req["can_participate"] is False and req["is_already_participating"] is False:
+                min_volume = req["requirements"].get("min_volume")
+                if req.get("missing_requirements", {}).get("min_volume", False):
+                    print(colored(
+                        f"❌ Bu givga qatnasha olmaymiz, minimal volume talab qilinadi: {min_volume} TON",
+                        "red"
+                    ))
+                    continue
 
             if req["is_already_participating"]:
                 print(colored("ℹ️ Allaqachon qatnashgan!", "yellow"))
