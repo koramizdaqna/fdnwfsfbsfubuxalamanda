@@ -34,7 +34,7 @@ if machine_code not in hash_values_list:
     print(color("Kodni aktivlashtirish uchun @Enshteyn40 ga murojat qiling", "magenta"))
     exit()
 
-print(color("✅ Oxirgi kod yangilangan vaqti: 14.06.2025 04:09 PM", "magenta"))
+print(color("✅ Oxirgi kod yangilangan vaqti: 14.07.2025 02:50 PM", "magenta"))
 
 # 📌 Userdan boost, premium va kerakli sonni so‘rash
 boost_input = input("Boostlik giveaway kerakmi? (ha/yoq): ").strip().lower()
@@ -105,7 +105,12 @@ async def main():
         if g.get("status") != "active":
             continue
 
+        if want_boost and not g.get("require_boost", False):
+            continue
         if not want_boost and g.get("require_boost", False):
+            continue
+
+        if want_premium and not g.get("require_premium", False):
             continue
         if not want_premium and g.get("require_premium", False):
             continue
@@ -172,21 +177,25 @@ async def main():
     )
 
     csv_filename = "portalhaqiqiygivlari.csv"
-    with open(csv_filename, "w", newline="", encoding="utf-8") as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow([
-            "ID", "Participants", "Ends at (Toshkent)", "Channels",
-            "Prizes count", "Prize floor prices total"
-        ])
-        for item in collected_sorted:
-            writer.writerow([
-                item["gid"],
-                item["participants"],
-                item["ends_at_parsed"],
-                item["channels"],
-                item["prizes_count"],
-                item["floor_prices_total"]
-            ])
+    with open("portalhaqiqiygivlari.csv", "w", encoding="utf-8") as f:
+        for idx, item in enumerate(collected_sorted, 1):
+            f.write(f"{idx}. 🎁 Giveaway:\n")
+            f.write(f"🆔 Giveaway id: {item['gid']}\n")
+            f.write(f"👥 Ishtirokchilar: {item['participants']}\n")
+            f.write(f"🎁 Sovrinlar soni: {item['prizes_count']}\n")
+            f.write(f"💲 Sovg'alar jami floor pricesi : {item['floor_prices_total']}\n")
+            f.write(f"⏳ Tugash vaqti: {item['ends_at_parsed']}\n")
+            if item["ends_at_dt"]:
+                time_left = (item["ends_at_dt"] - datetime.now(timezone('Asia/Tashkent'))).total_seconds() / 60
+                time_left = max(int(time_left), 0)
+                f.write(f"⌛ {time_left} daqiqa qoldi\n")
+            f.write(f"📺 Kanallar: {item['channels']}\n")
+            if item.get("require_premium", False):
+                f.write("🔐 Premium talab qilinadi\n")
+            if item.get("require_boost", False):
+                f.write("⚡ Boost talab qilinadi\n")
+            f.write("-" * 50 + "\n")
+        
 
     print(color(f"✅ Qoldirilgan giveawaylar: {found_count}", "green"))
     print(color(f"🚫 Chiqarib tashlangan giveawaylar: {removed_count}", "red"))
