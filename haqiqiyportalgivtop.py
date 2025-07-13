@@ -32,7 +32,7 @@ if machine_code not in hash_values_list:
     print(color("Kodni aktivlashtirish uchun @Enshteyn40 ga murojat qiling", "magenta"))
     exit()
 
-print(color("✅ Oxirgi kod yangilangan vaqti: 14.06.2025 04:09 PM", "magenta"))
+print(color("✅ Oxirgi kod yangilangan vaqti: 13.07.2025 07:09 AM", "magenta"))
 
 # 📌 Userdan boost, premium va kerakli sonni so‘rash
 boost_input = input("Boostlik giveaway kerakmi? (ha/yoq): ").strip().lower()
