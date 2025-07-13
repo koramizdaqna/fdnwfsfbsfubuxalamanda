@@ -9,7 +9,7 @@ from telethon.tl.types import InputUser
 from telethon.tl.functions.messages import RequestAppWebViewRequest
 from telethon.tl.types import InputBotAppShortName
 from datetime import datetime
-
+from telethon import utils, TelegramClient
 def color(text, color_code):
     color_map = {
         "red": "91", "green": "92", "yellow": "93", "blue": "94",
@@ -64,6 +64,8 @@ print(color(f"📲 Foydalaniladigan raqam: {phone}", "green"))
 api_id = 22962676
 api_hash = '543e9a4d695fe8c6aa4075c9525f7c57'
 
+
+phone = utils.parse_phone(phone)
 client = TelegramClient(f"sessions/{phone}", api_id, api_hash)
 client.start(phone)
 client(UpdateStatusRequest(offline=False))
