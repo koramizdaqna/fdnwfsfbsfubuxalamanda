@@ -32,7 +32,7 @@ if machine_code not in hash_values_list:
 print(color("✅ Oxirgi kod yangilangan vaqti: 14.06.2025 04:09 PM", "magenta"))
 
 # 📄 Telefonlar ro‘yxati
-with open('ozim1.csv', 'r') as f:
+with open('phone.csv', 'r') as f:
     phlist = [row[0] for row in csv.reader(f) if row]
 
 if not phlist:
@@ -42,7 +42,7 @@ if not phlist:
 api_id = 22962676
 api_hash = '543e9a4d695fe8c6aa4075c9525f7c57'
 
-recipient_username = "Enshteyn40"
+recipient_username = str(input("Yuboriladigan user kritiing: ( @cha siz) "))
 
 async def process_phone(parsed_phone):
     print(color(f"📲 Foydalaniladigan raqam: {parsed_phone}", "green"))
