@@ -9,7 +9,7 @@ from telethon.tl.types import InputUser
 from telethon.tl.functions.messages import RequestAppWebViewRequest
 from telethon.tl.types import InputBotAppShortName
 from datetime import datetime
-from telethon import utils, TelegramClient
+
 def color(text, color_code):
     color_map = {
         "red": "91", "green": "92", "yellow": "93", "blue": "94",
@@ -64,8 +64,6 @@ print(color(f"📲 Foydalaniladigan raqam: {phone}", "green"))
 api_id = 22962676
 api_hash = '543e9a4d695fe8c6aa4075c9525f7c57'
 
-
-phone = utils.parse_phone(phone)
 client = TelegramClient(f"sessions/{phone}", api_id, api_hash)
 client.start(phone)
 client(UpdateStatusRequest(offline=False))
@@ -96,6 +94,7 @@ async def main():
     data = r.json()
     giveaways = data.get("giveaways", [])
     found_count = 0
+    removed_count = 0
 
     csv_filename = "portalhaqiqiygivlari.csv"
     with open(csv_filename, "w", newline="", encoding="utf-8") as csvfile:
@@ -114,9 +113,34 @@ async def main():
             if not want_premium and g.get("require_premium", False):
                 continue
 
+            gid = g.get("id")
+
+            # 🔎 min_volume tekshirish
+            req_r = requests.get(
+                f"https://portals-market.com/api/giveaways/{gid}/requirements",
+                headers=headers, timeout=10
+            )
+            if req_r.status_code != 200:
+                print(color(f"[{gid}] ❌ Status: {req_r.status_code}", "red"))
+                continue
+
+            req = req_r.json()
+            min_vol = req.get("requirements", {}).get("min_volume")
+            min_vol_val = 0
+            if min_vol:
+                try:
+                    min_vol_val = float(min_vol)
+                except:
+                    min_vol_val = 0
+
+            if min_vol_val > 0:
+                print(color(f"[{gid}] ⛔ min_volume > 0: {min_vol_val} — chiqarib tashlandi", "yellow"))
+                removed_count += 1
+                continue
+
+            # 📝 CSV ga yozish
             found_count += 1
 
-            gid = g.get("id")
             participants = g.get("participants_count", 0)
             ends_at = g.get("ends_at", "N/A")
             ends_at_parsed = parse_time(ends_at) if ends_at != "N/A" else "N/A"
@@ -125,7 +149,6 @@ async def main():
             floor_prices = [float(p['nft_floor_price']) for p in g.get("prizes", [])]
             floor_prices_total = round(sum(floor_prices), 2)
 
-            # 📝 CSV ga yozish
             writer.writerow([
                 gid,
                 participants,
@@ -147,8 +170,9 @@ async def main():
             if found_count >= max_giveaways:
                 break
 
-    print(color(f"🔷 Topilgan mos giveawaylar soni: {found_count}", "green"))
-    print(color(f"📄 Giveawaylar saqlandi: {csv_filename}", "green"))
+    print(color(f"✅ Qoldirilgan giveawaylar: {found_count}", "green"))
+    print(color(f"🚫 Chiqarib tashlangan giveawaylar: {removed_count}", "red"))
+    print(color(f"📄 Saqlandi: {csv_filename}", "green"))
 
 with client:
     client.loop.run_until_complete(main())
