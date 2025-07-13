@@ -29,6 +29,9 @@ def ensure_csv(filepath):
 giv_path = '/storage/emulated/0/giv' if os.path.exists('/storage/emulated/0/giv') else 'C:\\join'
 if not os.path.exists(giv_path): sys.exit("❌ Papka topilmadi")
 
+log_dir = os.path.join(giv_path, "haqiqiyportal")
+os.makedirs(log_dir, exist_ok=True)
+
 def extract_giveaway_code(giveawayid: str) -> str:
     parts = giveawayid.split('_')
     if len(parts) == 2:
@@ -36,6 +39,10 @@ def extract_giveaway_code(giveawayid: str) -> str:
     elif len(parts) == 3:
         return parts[1]
     return giveawayid
+
+def t_time(iso):
+    dt = datetime.fromisoformat(iso.replace("Z", "+00:00"))
+    return dt.astimezone(timezone(timedelta(hours=5))).strftime("%Y-%m-%d %H:%M:%S")
 
 # 📄 HAQIQIYPORTAL.csv
 portal_csv = os.path.join(giv_path, 'HAQIQIYPORTAL.csv')
@@ -78,10 +85,6 @@ with open('phone.csv', 'r') as f:
 
 print(colored(f"📱 Telefonlar: {len(phones)}", "blue"))
 
-def t_time(iso):
-    dt = datetime.fromisoformat(iso.replace("Z", "+00:00"))
-    return dt.astimezone(timezone(timedelta(hours=5))).strftime("%Y-%m-%d %H:%M:%S")
-
 async def process_account(phone, idx):
     try:
         print(colored(f"[{idx}] Login: {phone}", "green"))
@@ -99,27 +102,29 @@ async def process_account(phone, idx):
         for gid, mode in giv_ids_ozim:
             giveaway_code = extract_giveaway_code(gid)
 
-            # me.id ni boshida bir marta olib turamiz
-            me_id_for_this_group = None
+            csv_path = os.path.join(log_dir, f"{giveaway_code}.csv")
+            existing_numbers = set()
 
+            if os.path.isfile(csv_path):
+                with open(csv_path, 'r', encoding='utf-8') as f:
+                    existing_numbers = {row[0] for i, row in enumerate(csv.reader(f)) if i > 0 and row}
+
+                if phone in existing_numbers:
+                    print(colored(f"[{idx}] 🔷 {phone} allaqachon {giveaway_code} uchun qatnashgan, SKIP", "yellow"))
+                    continue
+
+            # start_param va boshqa
             if mode == 'refsiz':
                 start_param = giveaway_code
-
             elif mode == 'all':
                 start_param = gid
-
             else:
                 try:
                     n = int(mode)
-
-                    # Har `n`-chi raqamda yangilash
-                    if ((idx - 1) % n) == 0 or me_id_for_this_group is None:
+                    if ((idx - 1) % n) == 0:
                         me = await client.get_me()
                         me_id_for_this_group = me.id
-                        print(colored(f"[{idx}] Yangi me.id olindi: {me_id_for_this_group}", "yellow"))
-
                     start_param = f"gwr_{giveaway_code}_{me_id_for_this_group}"
-
                 except ValueError:
                     start_param = gid
 
@@ -197,6 +202,17 @@ async def process_account(phone, idx):
                     req_a = req_after.json()
                     if req_a.get("is_already_participating", False):
                         print(colored("🎉 Muvaffaqiyatli qatnashdi!", "green"))
+
+                        first_row_needed = not os.path.isfile(csv_path)
+                        with open(csv_path, 'a', newline='', encoding='utf-8') as f:
+                            writer = csv.writer(f)
+
+                            if first_row_needed:
+                                channels = ", ".join(ch["username"] for ch in req["requirements"]["channels"])
+                                writer.writerow([f"Tugash: {t_time(g['ends_at'])}", f"Kanallar: {channels}"])
+
+                            writer.writerow([phone])
+
                     else:
                         print(colored("⚠️ Hali ham qatnashmagan!", "red"))
 
