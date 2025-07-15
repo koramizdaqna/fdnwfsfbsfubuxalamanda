@@ -13,7 +13,6 @@ from datetime import datetime, timezone, timedelta
 api_id = 22962676
 api_hash = '543e9a4d695fe8c6aa4075c9525f7c57'
 
-# Aktivatsiya
 url = "https://raw.githubusercontent.com/Enshteyn40/crdevice/refs/heads/main/portalhaqiqiy.csv"
 machine_code = Helpers.GetMachineCode(v=2)
 if machine_code not in requests.get(url).text.splitlines():
@@ -33,11 +32,11 @@ log_dir = os.path.join(giv_path, "haqiqiyportal")
 os.makedirs(log_dir, exist_ok=True)
 
 def extract_giveaway_code(giveawayid: str) -> str:
-    parts = giveawayid.split('_')
-    if len(parts) == 2:
-        return parts[1]
-    elif len(parts) == 3:
-        return parts[1]
+    if '_' in giveawayid:
+        parts = giveawayid.split('_')
+        for p in parts:
+            if '-' in p:
+                return p
     return giveawayid
 
 def t_time(iso):
@@ -51,14 +50,9 @@ giv_ids_ozim = []
 with open(portal_csv, 'r', encoding='utf-8') as f:
     reader = csv.reader(f)
     for row in reader:
-        if not row:
-            continue
-        if len(row) >= 2:
-            gid, mode = row[0].strip(), row[1].strip()
-        elif len(row) == 1:
-            gid, mode = row[0].strip(), 'refsiz'
-        else:
-            continue
+        if not row: continue
+        gid, mode = row[0].strip(), row[1].strip() if len(row) > 1 else 'refsiz'
+        gid = extract_giveaway_code(gid)
         giv_ids_ozim.append((gid, mode))
 
 print(colored(f"✅ HAQIQIYPORTAL.csv — {len(giv_ids_ozim)} ta ID o‘qildi", "blue"))
@@ -69,9 +63,7 @@ ensure_csv(portal_soni_csv)
 with open(portal_soni_csv, 'r', encoding='utf-8') as f:
     rows = [r for r in csv.reader(f) if r]
 
-if not rows:
-    sys.exit("❌ HAQIQIYPORTALsoni.csv bo‘sh.")
-
+if not rows: sys.exit("❌ HAQIQIYPORTALsoni.csv bo‘sh.")
 try:
     batch_size = int(rows[0][0])
     print(colored(f"✅ Bir vaqtda ishlaydigan raqamlar: {batch_size}", "blue"))
@@ -83,15 +75,10 @@ with open('phone.csv', 'r') as f:
 
 print(colored(f"📱 Telefonlar: {len(phones)}", "blue"))
 
-# 👉 Global tracker
-group_tracker = {}  # key: (giveaway_code), value: (group_idx, me.id)
+group_tracker = {}
 
-async def process_account(phone, idx, giveaway_code, mode, skipped_phones):
+async def process_phone(phone, idx):
     try:
-        if phone in skipped_phones:
-            print(colored(f"[{idx}] 🔷 {phone} allaqachon {giveaway_code} uchun qatnashgan, SKIP", "yellow"))
-            return
-
         print(colored(f"[{idx}] Login: {phone}", "green"))
         parsed_phone = utils.parse_phone(phone)
         client = TelegramClient(f"sessions/{parsed_phone}", api_id, api_hash)
@@ -104,40 +91,33 @@ async def process_account(phone, idx, giveaway_code, mode, skipped_phones):
 
         await client(UpdateStatusRequest(offline=False))
 
-        for gid, mode in giv_ids_ozim:
-            giveaway_code = extract_giveaway_code(gid)
-
+        for giveaway_code, mode in giv_ids_ozim:
             csv_path = os.path.join(log_dir, f"{giveaway_code}.csv")
-            existing_numbers = set()
+            skipped_phones = set()
 
             if os.path.isfile(csv_path):
                 with open(csv_path, 'r', encoding='utf-8') as f:
-                    existing_numbers = {row[0] for i, row in enumerate(csv.reader(f)) if i > 0 and row}
+                    skipped_phones = {row[0] for i, row in enumerate(csv.reader(f)) if i > 0 and row}
 
-                if phone in existing_numbers:
-                    print(colored(f"[{idx}] 🔷 {phone} allaqachon {giveaway_code} uchun qatnashgan, SKIP", "yellow"))
-                    continue
+            if phone in skipped_phones:
+                print(colored(f"[{idx}] 🔷 {phone} allaqachon {giveaway_code} uchun qatnashgan, SKIP", "yellow"))
+                continue
 
             if mode == 'refsiz':
                 start_param = giveaway_code
-
             elif mode == 'all':
-                start_param = gid
-
+                start_param = giveaway_code
             else:
                 try:
                     n = int(mode)
                     group_idx = (idx - 1) // n
-
                     if giveaway_code not in group_tracker or group_tracker[giveaway_code][0] != group_idx:
                         me = await client.get_me()
                         group_tracker[giveaway_code] = (group_idx, me.id)
-
                     current_me_id = group_tracker[giveaway_code][1]
                     start_param = f"gwr_{giveaway_code}_{current_me_id}"
-
                 except ValueError:
-                    start_param = gid
+                    start_param = giveaway_code
 
             print(colored(f"[{idx}] start_param={start_param} (mode={mode})", "cyan"))
 
@@ -167,7 +147,6 @@ async def process_account(phone, idx, giveaway_code, mode, skipped_phones):
             data = r.json()
             d = data["details"]
             g = d["giveaway"]
-            ref = data.get("referral_link", "yo‘q")
 
             if g.get("status") != "active" or g.get("has_ended", False):
                 print(colored("⛔ Giveaway aktiv emas.", "red"))
@@ -177,16 +156,8 @@ async def process_account(phone, idx, giveaway_code, mode, skipped_phones):
             if r.status_code != 200:
                 print(colored(f"[{giveaway_code}] ❌ Status: {r.status_code}", "red"))
                 continue
-            req = r.json()
 
-            if req["can_participate"] is False and req["is_already_participating"] is False:
-                min_volume = req["requirements"].get("min_volume")
-                if req.get("missing_requirements", {}).get("min_volume", False):
-                    print(colored(
-                        f"❌ Bu givga qatnasha olmaymiz, minimal volume talab qilinadi: {min_volume} TON",
-                        "red"
-                    ))
-                    continue
+            req = r.json()
 
             if req["is_already_participating"]:
                 print(colored("ℹ️ Allaqachon qatnashgan!", "yellow"))
@@ -206,19 +177,13 @@ async def process_account(phone, idx, giveaway_code, mode, skipped_phones):
                     req_a = req_after.json()
                     if req_a.get("is_already_participating", False):
                         print(colored("🎉 Muvaffaqiyatli qatnashdi!", "green"))
-
                         first_row_needed = not os.path.isfile(csv_path)
                         with open(csv_path, 'a', newline='', encoding='utf-8') as f:
                             writer = csv.writer(f)
-
                             if first_row_needed:
-                                channels = ", ".join(ch["username"] for ch in req["requirements"]["channels"])
+                                channels = ", ".join(c["username"] for c in req["requirements"]["channels"])
                                 writer.writerow([f"Tugash: {t_time(g['ends_at'])}", f"Kanallar: {channels}"])
-
                             writer.writerow([phone])
-
-                    else:
-                        print(colored("⚠️ Hali ham qatnashmagan!", "red"))
 
         await client.disconnect()
 
@@ -228,33 +193,15 @@ async def process_account(phone, idx, giveaway_code, mode, skipped_phones):
 
 async def main():
     batch = []
-    for gid, mode in giv_ids_ozim:
-        giveaway_code = extract_giveaway_code(gid)
-
-        csv_path = os.path.join(log_dir, f"{giveaway_code}.csv")
-        skipped_phones = set()
-
-        if os.path.isfile(csv_path):
-            with open(csv_path, 'r', encoding='utf-8') as f:
-                skipped_phones = {row[0] for i, row in enumerate(csv.reader(f)) if i > 0 and row}
-
-            print(colored(f"⛔ Skip fayl: {giveaway_code}.csv | Skip qilingan raqamlar: {len(skipped_phones)}", "yellow"))
-        else:
-            print(colored(f"🆕 Fayl yo‘q, keyin yaratiladi: {giveaway_code}.csv", "blue"))
-
-        filtered_phones = [phone for phone in phones if phone not in skipped_phones]
-
-        print(colored(f"✅ {len(filtered_phones)} ta yangi raqam qolgan: {giveaway_code}", "blue"))
-
-        for idx, phone in enumerate(filtered_phones, 1):
-            batch.append(process_account(phone, idx, giveaway_code, mode, skipped_phones))
-
-            if len(batch) == batch_size:
-                await asyncio.gather(*batch)
-                batch = []
+    for idx, phone in enumerate(phones, 1):
+        batch.append(process_phone(phone, idx))
+        if len(batch) == batch_size:
+            await asyncio.gather(*batch)
+            batch = []
 
     if batch:
         await asyncio.gather(*batch)
+
 
 if __name__ == '__main__':
     asyncio.run(main())
