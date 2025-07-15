@@ -243,10 +243,12 @@ async def main():
             print(colored(f"🆕 Fayl yo‘q, keyin yaratiladi: {giveaway_code}.csv", "blue"))
 
         filtered_phones = [phone for phone in phones if phone not in skipped_phones]
+
         print(colored(f"✅ {len(filtered_phones)} ta yangi raqam qolgan: {giveaway_code}", "blue"))
 
         for idx, phone in enumerate(filtered_phones, 1):
             batch.append(process_account(phone, idx, giveaway_code, mode, skipped_phones))
+
             if len(batch) == batch_size:
                 await asyncio.gather(*batch)
                 batch = []
