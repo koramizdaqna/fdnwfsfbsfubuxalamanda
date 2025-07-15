@@ -34,7 +34,7 @@ if machine_code not in hash_values_list:
     print(color("Kodni aktivlashtirish uchun @Enshteyn40 ga murojat qiling", "magenta"))
     exit()
 
-print(color("✅ Oxirgi kod yangilangan vaqti: 14.07.2025 02:50 PM", "magenta"))
+print(color("✅ Oxirgi kod yangilangan vaqti: 14.06.2025 04:09 PM", "magenta"))
 
 # 📌 Userdan boost, premium va kerakli sonni so‘rash
 boost_input = input("Boostlik giveaway kerakmi? (ha/yoq): ").strip().lower()
@@ -139,6 +139,22 @@ async def main():
             print(color(f"[{gid}] ⛔ min_volume > 0: {min_vol_val} — chiqarib tashlandi", "yellow"))
             removed_count += 1
             continue
+        prizes_count = g.get("prizes_count", 0)
+        floor_prices = []
+        prize_names = []
+
+        for p in g.get("prizes", []):
+            # Narxlarni yig‘ish
+            try:
+                floor_prices.append(float(p.get('nft_floor_price', 0)))
+            except:
+                pass
+
+            # Sovrin nomini olish
+            name = p.get("nft_name") or p.get("name") or p.get("title") or "Noma’lum sovrin"
+            prize_names.append(name)
+
+        floor_prices_total = round(sum(floor_prices), 2)
 
         participants = g.get("participants_count", 0)
         ends_at = g.get("ends_at", "N/A")
@@ -155,9 +171,9 @@ async def main():
             "ends_at_dt": ends_at_dt,
             "channels": ", ".join(channels),
             "prizes_count": prizes_count,
-            "floor_prices_total": floor_prices_total
+            "floor_prices_total": floor_prices_total,
+            "prize_names": prize_names
         })
-
         print(color(f"🎯 ID: {gid}", "cyan"))
         print(f"👥 Participants: {participants}")
         print(f"⏳ Ends at (Toshkent): {ends_at_parsed}")
@@ -179,7 +195,7 @@ async def main():
     csv_filename = "portalhaqiqiygivlari.csv"
     with open("portalhaqiqiygivlari.csv", "w", encoding="utf-8") as f:
         for idx, item in enumerate(collected_sorted, 1):
-            f.write(f"{idx}. 🎁 Giveaway:\n")
+            f.write(f"🎁 Sovrinlar: {', '.join(item['prize_names'])}\n")
             f.write(f"🆔 Giveaway id: {item['gid']}\n")
             f.write(f"👥 Ishtirokchilar: {item['participants']}\n")
             f.write(f"🎁 Sovrinlar soni: {item['prizes_count']}\n")
