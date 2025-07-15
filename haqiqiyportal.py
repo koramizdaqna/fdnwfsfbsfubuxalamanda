@@ -86,8 +86,12 @@ print(colored(f"📱 Telefonlar: {len(phones)}", "blue"))
 # 👉 Global tracker
 group_tracker = {}  # key: (giveaway_code), value: (group_idx, me.id)
 
-async def process_account(phone, idx):
+async def process_account(phone, idx, giveaway_code, mode, skipped_phones):
     try:
+        if phone in skipped_phones:
+            print(colored(f"[{idx}] 🔷 {phone} allaqachon {giveaway_code} uchun qatnashgan, SKIP", "yellow"))
+            return
+
         print(colored(f"[{idx}] Login: {phone}", "green"))
         parsed_phone = utils.parse_phone(phone)
         client = TelegramClient(f"sessions/{parsed_phone}", api_id, api_hash)
@@ -224,11 +228,29 @@ async def process_account(phone, idx):
 
 async def main():
     batch = []
-    for idx, phone in enumerate(phones, 1):
-        batch.append(process_account(phone, idx))
-        if len(batch) == batch_size:
-            await asyncio.gather(*batch)
-            batch = []
+    for gid, mode in giv_ids_ozim:
+        giveaway_code = extract_giveaway_code(gid)
+
+        csv_path = os.path.join(log_dir, f"{giveaway_code}.csv")
+        skipped_phones = set()
+
+        if os.path.isfile(csv_path):
+            with open(csv_path, 'r', encoding='utf-8') as f:
+                skipped_phones = {row[0] for i, row in enumerate(csv.reader(f)) if i > 0 and row}
+
+            print(colored(f"⛔ Skip fayl: {giveaway_code}.csv | Skip qilingan raqamlar: {len(skipped_phones)}", "yellow"))
+        else:
+            print(colored(f"🆕 Fayl yo‘q, keyin yaratiladi: {giveaway_code}.csv", "blue"))
+
+        filtered_phones = [phone for phone in phones if phone not in skipped_phones]
+        print(colored(f"✅ {len(filtered_phones)} ta yangi raqam qolgan: {giveaway_code}", "blue"))
+
+        for idx, phone in enumerate(filtered_phones, 1):
+            batch.append(process_account(phone, idx, giveaway_code, mode, skipped_phones))
+            if len(batch) == batch_size:
+                await asyncio.gather(*batch)
+                batch = []
+
     if batch:
         await asyncio.gather(*batch)
 
