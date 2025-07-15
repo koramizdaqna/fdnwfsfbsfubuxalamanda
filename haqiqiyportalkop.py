@@ -161,10 +161,10 @@ async def process_phone(phone, idx):
                     "user-agent": "Mozilla/5.0"
                 }
                 
-                async with http_client.get("https://ipinfo.io/json") as response:
-                    ip_info = await response.json()
-                    print("RAQAM UCHUN BOSHLANISH IP ADRESS")
-                    print(ip_info['ip'])
+                # async with http_client.get("https://ipinfo.io/json") as response:
+                #     ip_info = await response.json()
+                #     print("RAQAM UCHUN BOSHLANISH IP ADRESS")
+                #     print(ip_info['ip'])
 
                 # 📋 GET giveaway details
                 async with http_client.get(
@@ -225,10 +225,10 @@ async def process_phone(phone, idx):
                                         writer.writerow([f"Tugash: {t_time(g['ends_at'])}", f"Kanallar: {channels}"])
                                     writer.writerow([phone])
                                     
-                    async with http_client.get("https://ipinfo.io/json") as response:
-                        ip_info = await response.json()
-                        print("RAQAM UCHUN TUGALLANISH IP ADRESS")
-                        print(ip_info['ip'])
+                    # async with http_client.get("https://ipinfo.io/json") as response:
+                    #     ip_info = await response.json()
+                    #     print("RAQAM UCHUN TUGALLANISH IP ADRESS")
+                    #     print(ip_info['ip'])
 
         await client.disconnect()
 
