@@ -21,7 +21,7 @@ if machine_code not in requests.get(url).text.splitlines():
     print(colored(f"{machine_code}", "magenta"))
     print(colored("Kodni aktivlashtirish uchun @Enshteyn40 ga murojat qiling", "magenta"))
     sys.exit()
-print(colored("✅ Kod aktiv. Oxirgi yangilanish: 13.07.2025", "magenta"))
+print(colored("✅ Kod aktiv. Oxirgi yangilanish: 16.07.2025 04:23 AM", "magenta"))
 
 def ensure_csv(filepath):
     if not os.path.isfile(filepath):
@@ -131,10 +131,16 @@ async def process_phone(phone, idx):
                 try:
                     n = int(mode)
                     group_idx = (idx - 1) // n
-                    if giveaway_code not in group_tracker or group_tracker[giveaway_code][0] != group_idx:
+
+                    if giveaway_code not in group_tracker:
+                        group_tracker[giveaway_code] = {}  # har bir giveaway uchun alohida dict
+
+                    if group_idx not in group_tracker[giveaway_code]:
+                        # faqat birinchi odamni olamiz va saqlaymiz
                         me = await client.get_me()
-                        group_tracker[giveaway_code] = (group_idx, me.id)
-                    current_me_id = group_tracker[giveaway_code][1]
+                        group_tracker[giveaway_code][group_idx] = me.id
+
+                    current_me_id = group_tracker[giveaway_code][group_idx]
                     start_param = f"gwr_{giveaway_code}_{current_me_id}"
                 except ValueError:
                     start_param = giveaway_code
