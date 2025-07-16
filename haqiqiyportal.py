@@ -67,6 +67,8 @@ if not rows: sys.exit("❌ HAQIQIYPORTALsoni.csv bo‘sh.")
 try:
     batch_size = int(rows[0][0])
     print(colored(f"✅ Bir vaqtda ishlaydigan raqamlar: {batch_size}", "blue"))
+    print(colored(f"Sizning hohishingizga Tupurgan holda 1 tadan ishlaymiz", "blue"))
+    
 except ValueError:
     sys.exit("❌ HAQIQIYPORTALsoni.csv ichidagi qiymat raqam emas.")
 
@@ -221,7 +223,7 @@ async def main():
     batch = []
     for idx, phone in enumerate(phones, 1):
         batch.append(process_phone(phone, idx))
-        if len(batch) == batch_size:
+        if len(batch) == 1:
             await asyncio.gather(*batch)
             batch = []
 
