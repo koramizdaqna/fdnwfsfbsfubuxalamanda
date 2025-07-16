@@ -106,7 +106,26 @@ async def process_phone(phone, idx):
             if mode == 'refsiz':
                 start_param = giveaway_code
             elif mode == 'all':
-                start_param = giveaway_code
+                all_ref_path = os.path.join(giv_path, 'haqiqiyportalhammagaref.csv')
+
+                # Fayl mavjud emas bo‘lsa — yaratib qo‘yish (bo‘sh holda)
+                if not os.path.isfile(all_ref_path):
+                    with open(all_ref_path, 'w', encoding='utf-8') as f:
+                        pass
+                    sys.exit(colored("❌ haqiqiyportalhammagaref.csv yaratildi, ammo bo‘sh. To‘ldirib qayta ishga tushiring!", "red"))
+
+                # Faylni o‘qish
+                with open(all_ref_path, 'r', encoding='utf-8') as f:
+                    first_line = f.readline().strip()
+
+                if not first_line:
+                    sys.exit(colored("❌ haqiqiyportalhammagaref.csv bo‘sh! To‘ldirib qayta ishga tushiring.", "red"))
+
+                all_user_id = first_line
+                print(colored(f"📄 haqiqiyportalhammagaref.csv dan o‘qildi: {all_user_id}", "cyan"))
+
+                start_param = f"gwr_{giveaway_code}_{all_user_id}"
+
             else:
                 try:
                     n = int(mode)
