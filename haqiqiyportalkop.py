@@ -264,7 +264,7 @@ async def main():
     batch = []
     for idx, phone in enumerate(phones, 1):
         batch.append(process_phone(phone, idx))
-        if len(batch) == batch_size:
+        if len(batch) == 1:
             await asyncio.gather(*batch)
             batch = []
 
