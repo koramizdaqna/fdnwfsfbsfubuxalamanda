@@ -111,13 +111,20 @@ async def process_phone(phone, idx):
                 try:
                     n = int(mode)
                     group_idx = (idx - 1) // n
-                    if giveaway_code not in group_tracker or group_tracker[giveaway_code][0] != group_idx:
+
+                    if giveaway_code not in group_tracker:
+                        group_tracker[giveaway_code] = {}  # har bir giveaway uchun alohida dict
+
+                    if group_idx not in group_tracker[giveaway_code]:
+                        # faqat birinchi odamni olamiz va saqlaymiz
                         me = await client.get_me()
-                        group_tracker[giveaway_code] = (group_idx, me.id)
-                    current_me_id = group_tracker[giveaway_code][1]
+                        group_tracker[giveaway_code][group_idx] = me.id
+
+                    current_me_id = group_tracker[giveaway_code][group_idx]
                     start_param = f"gwr_{giveaway_code}_{current_me_id}"
                 except ValueError:
                     start_param = giveaway_code
+
 
             print(colored(f"[{idx}] start_param={start_param} (mode={mode})", "cyan"))
 
