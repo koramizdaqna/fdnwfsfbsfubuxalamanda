@@ -21,7 +21,7 @@ if machine_code not in requests.get(url).text.splitlines():
     print(colored(f"{machine_code}", "magenta"))
     print(colored("Kodni aktivlashtirish uchun @Enshteyn40 ga murojat qiling", "magenta"))
     sys.exit()
-print(colored("✅ Kod aktiv. Oxirgi yangilanish: 16.07.2025 04:23 AM", "magenta"))
+print(colored("✅ Kod aktiv. Oxirgi yangilanish: 16.07.2025 07:40 PM", "magenta"))
 
 def ensure_csv(filepath):
     if not os.path.isfile(filepath):
@@ -185,10 +185,10 @@ async def process_phone(phone, idx):
                     "user-agent": "Mozilla/5.0"
                 }
                 
-                # async with http_client.get("https://ipinfo.io/json") as response:
-                #     ip_info = await response.json()
-                #     print("RAQAM UCHUN BOSHLANISH IP ADRESS")
-                #     print(ip_info['ip'])
+                async with http_client.get("https://ipinfo.io/json") as response:
+                    ip_info = await response.json()
+                    print("RAQAM UCHUN BOSHLANISH IP ADRESS")
+                    print(ip_info['ip'])
 
                 # 📋 GET giveaway details
                 async with http_client.get(
@@ -249,10 +249,10 @@ async def process_phone(phone, idx):
                                         writer.writerow([f"Tugash: {t_time(g['ends_at'])}", f"Kanallar: {channels}"])
                                     writer.writerow([phone])
                                     
-                    # async with http_client.get("https://ipinfo.io/json") as response:
-                    #     ip_info = await response.json()
-                    #     print("RAQAM UCHUN TUGALLANISH IP ADRESS")
-                    #     print(ip_info['ip'])
+                    async with http_client.get("https://ipinfo.io/json") as response:
+                        ip_info = await response.json()
+                        print("RAQAM UCHUN TUGALLANISH IP ADRESS")
+                        print(ip_info['ip'])
 
         await client.disconnect()
 
