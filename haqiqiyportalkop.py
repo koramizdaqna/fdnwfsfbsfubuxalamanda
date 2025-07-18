@@ -21,7 +21,7 @@ if machine_code not in requests.get(url).text.splitlines():
     print(colored(f"{machine_code}", "magenta"))
     print(colored("Kodni aktivlashtirish uchun @Enshteyn40 ga murojat qiling", "magenta"))
     sys.exit()
-print(colored("✅ Kod aktiv. Oxirgi yangilanish: 16.07.2025 07:40 PM", "magenta"))
+print(colored("✅ Kod aktiv. Oxirgi yangilanish: 18.07.2025 09:35 AM", "magenta"))
 
 def ensure_csv(filepath):
     if not os.path.isfile(filepath):
@@ -232,6 +232,8 @@ async def process_phone(phone, idx):
                         headers=headers, timeout=10) as r:
                         if r.status != 204:
                             print(colored(f"[{giveaway_code}] ❌ Status: {r.status}", "red"))
+                        else:
+                            print("Qatnashish so'rovi muvaffaqiyatli yuborildi")
 
                     # 📋 GET requirements after join
                     async with http_client.get(
@@ -248,6 +250,8 @@ async def process_phone(phone, idx):
                                         channels = ", ".join(c["username"] for c in req["requirements"]["channels"])
                                         writer.writerow([f"Tugash: {t_time(g['ends_at'])}", f"Kanallar: {channels}"])
                                     writer.writerow([phone])
+                        else:
+                            print("Qatnashganini tekshriish so'rovi yuborishda xatolik")
                                     
                     async with http_client.get("https://ipinfo.io/json") as response:
                         ip_info = await response.json()
