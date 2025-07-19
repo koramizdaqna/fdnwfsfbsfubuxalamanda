@@ -199,7 +199,7 @@ async def process_phone(phone, idx):
                         print(colored(f"❌ Kanal xatolik: {e}", "red"))
 
                 requests.post(f"https://portals-market.com/api/giveaways/{giveaway_code}/join", headers=headers, timeout=10)
-
+                
                 req_after = requests.get(f"https://portals-market.com/api/giveaways/{giveaway_code}/requirements", headers=headers, timeout=10)
                 if req_after.status_code == 200:
                     req_a = req_after.json()
@@ -212,6 +212,8 @@ async def process_phone(phone, idx):
                                 channels = ", ".join(c["username"] for c in req["requirements"]["channels"])
                                 writer.writerow([f"Tugash: {t_time(g['ends_at'])}", f"Kanallar: {channels}"])
                             writer.writerow([phone])
+                else:
+                    print("giveawayga kirganini tekshirishda xatolik")
 
         await client.disconnect()
 
