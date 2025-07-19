@@ -36,13 +36,13 @@ if machine_code not in hash_values_list:
     print(color("Kodni aktivlashtirish uchun @Enshteyn40 ga murojat qiling", "magenta"))
     exit()
 
-print(color("✅ Oxirgi kod yangilangan vaqti: 14.06.2025 04:09 PM", "magenta"))
+print(color("✅ Oxirgi kod yangilangan vaqti: 19.07.2025 04:09 PM", "magenta"))
 
 with open('hash.csv', 'r') as f:
     phlist = [row[0] for row in csv.reader(f) if row]
 
 if not phlist:
-    print(color("📄 phone.csv bo'sh!", "red"))
+    print(color("📄 hash.csv bo'sh!", "red"))
     exit()
 
 api_id = 22962676
@@ -53,9 +53,8 @@ winners_filename = "portalhaqiqiyyutgani.csv"
 async def process_account(phone, idx):
     try:
         print(colored(f"[{idx}]", "green"))
-        client = TelegramClient(StringSession(phone), api_id=6810439, api_hash="66ac3b67cce1771ce129819a42efe02e")
-        await client.start()
-
+        client = TelegramClient(StringSession(phone), api_id=api_id, api_hash=api_hash)
+        await client.connect()
         if not await client.is_user_authorized():
             print(colored(f"[{idx}] ❌ Sessiya yo‘q!", "red"))
             await client.disconnect()
@@ -130,9 +129,9 @@ async def process_account(phone, idx):
         print(colored(f"[{idx}] Xatolik: {e}", "red"))
 
 async def main():
-    for phone in phlist:
+    for idx, phone in enumerate(phlist, 1):
         try:
-            await process_account(phone)
+            await process_account(phone, idx)
         except Exception as e:
             print(color(f"⚠️ {phone} da xatolik: {e}", "red"))
 
