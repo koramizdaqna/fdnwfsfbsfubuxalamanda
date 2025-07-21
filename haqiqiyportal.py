@@ -19,7 +19,7 @@ if machine_code not in requests.get(url).text.splitlines():
     print(colored(f"{machine_code}", "magenta"))
     print(colored("Kodni aktivlashtirish uchun @Enshteyn40 ga murojat qiling", "magenta"))
     sys.exit()
-print(colored("✅ Kod aktiv. Oxirgi yangilanish: 13.07.2025", "magenta"))
+print(colored("✅ Kod aktiv. Oxirgi yangilanish: 21.07.2025", "magenta"))
 
 def ensure_csv(filepath):
     if not os.path.isfile(filepath):
@@ -84,14 +84,14 @@ async def process_phone(phone, idx):
         print(colored(f"[{idx}] Login: {phone}", "green"))
         parsed_phone = utils.parse_phone(phone)
         client = TelegramClient(f"sessions/{parsed_phone}", api_id, api_hash)
-        await client.start(phone=parsed_phone)
+        await client.connect()
 
         if not await client.is_user_authorized():
             print(colored(f"[{idx}] ❌ Sessiya yo‘q!", "red"))
             await client.disconnect()
             return
-
-        await client(UpdateStatusRequest(offline=False))
+        await client.start(phone=parsed_phone)
+        await client(UpdateStatusRequest(offline=False)) 
 
         for giveaway_code, mode in giv_ids_ozim:
             csv_path = os.path.join(log_dir, f"{giveaway_code}.csv")
