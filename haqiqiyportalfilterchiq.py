@@ -118,7 +118,7 @@ async def main():
 
     print(f"📁 Foydalanilayotgan folder: {folder}")
 
-    phonecsv = "adhamjon.csv"
+    phonecsv = "phone.csv"
 
     result, files_to_delete = get_channels_to_leave(folder)
 
@@ -133,7 +133,7 @@ async def main():
             phone = utils.parse_phone(phone_raw)
             print(f'\n{index + 1}-akkaunt: {phone}')
 
-            client = TelegramClient(f"adhamjon/{phone}", 22962676, '543e9a4d695fe8c6aa4075c9525f7c57')
+            client = TelegramClient(f"sessions/{phone}", 22962676, '543e9a4d695fe8c6aa4075c9525f7c57')
             await client.connect()
 
             if not await client.is_user_authorized():
