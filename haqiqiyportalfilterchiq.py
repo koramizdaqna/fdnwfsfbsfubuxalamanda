@@ -35,7 +35,7 @@ async def leave_channels(client, channels_to_leave):
     channels_to_leave: {username: tugash_vaqti}
     """
     print("📤 Kanallardan chiqish boshlandi...")
- 
+
     for username, tugash_vaqti in channels_to_leave.items():
         username_clean = username.lstrip("@")
         try:
