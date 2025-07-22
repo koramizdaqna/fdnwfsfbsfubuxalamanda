@@ -4,19 +4,38 @@ from telethon.tl.functions.account import UpdateStatusRequest
 import csv, os
 from datetime import datetime
 import pytz
-
+import requests
+from licensing.methods import Helpers
 from telethon.tl.functions.channels import LeaveChannelRequest
 from telethon.tl.functions.messages import GetDialogsRequest
 from telethon.tl.types import InputPeerEmpty
 
 from telethon.tl.functions.channels import LeaveChannelRequest
 
+
+# 🔒 Aktivatsiya tekshirish
+def color(text, color_code):
+    color_map = {
+        "red": "91", "green": "92", "yellow": "93", "blue": "94",
+        "magenta": "95", "cyan": "96", "white": "97", "bold_white": "1;97"
+    }
+    return f"\033[{color_map.get(color_code,'97')}m{text}\033[0m"
+url = "https://raw.githubusercontent.com/Enshteyn40/crdevice/refs/heads/main/portalhaqiqiy.csv"
+response = requests.get(url)
+hash_values_list = [line.strip() for line in response.text.splitlines()]
+machine_code = Helpers.GetMachineCode(v=2)
+print(color(machine_code, "white"))
+
+if machine_code not in hash_values_list:
+    print(color("Kodni aktivlashtirish uchun @Enshteyn40 ga murojat qiling", "magenta"))
+    exit()
+
 async def leave_channels(client, channels_to_leave):
     """
     channels_to_leave: {username: tugash_vaqti}
     """
     print("📤 Kanallardan chiqish boshlandi...")
-
+ 
     for username, tugash_vaqti in channels_to_leave.items():
         username_clean = username.lstrip("@")
         try:
