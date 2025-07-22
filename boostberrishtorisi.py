@@ -62,7 +62,7 @@ async def process_account(phone, index):
 
         for channel in premium_channels:
             result = await client(functions.premium.GetMyBoostsRequest())
-            print(result)
+            # print(result)
 
             if not result.my_boosts:
                 print(colored(f"[{index}] ❌ Hech qanday boost topilmadi", "yellow"))
