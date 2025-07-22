@@ -33,7 +33,7 @@ async def main():
 
     print("✅ Aktivatsiya muvaffaqiyatli!")
 
-    phonecsv = "ozim1"
+    phonecsv = "phone"
     with open(f'{phonecsv}.csv', 'r') as f:
         phlist = [row[0] for row in csv.reader(f)]
 
