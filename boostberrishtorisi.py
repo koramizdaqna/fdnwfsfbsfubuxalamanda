@@ -47,7 +47,7 @@ mrkt_file = ensure_path_and_file(giv_path, 'boosberadigankanallar.csv')
 premium_channels = [row[0] for row in csv.reader(open(mrkt_file, 'r', encoding='utf-8')) if row]
 
 # 📄 Telefon raqamlarini o‘qish
-with open('boosberadigankanallar.csv', 'r') as f:
+with open('boostlilar.csv', 'r') as f:
     phones = [row[0] for row in csv.reader(f)]
 
 print(colored(f"Boost bor raqamlar: {len(phones)}", "blue"))
