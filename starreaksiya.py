@@ -1,3 +1,66 @@
+# from telethon.sync import TelegramClient
+# from licensing.models import *
+# from licensing.methods import Key, Helpers
+# from telethon.sync import TelegramClient
+# print("Tabriklayman")
+# from telethon.sync import TelegramClient
+# import csv
+# from telethon.tl.types import MessageActionGiftCode
+# from telethon import utils
+# from telethon.sync import TelegramClient
+# from telethon.sync import TelegramClient
+# from telethon import functions, types
+# from telethon.tl.functions.account import UpdateStatusRequest
+# phonecsv = "phone"
+# with open(f'{phonecsv}.csv', 'r') as f:
+#     phlist = [row[0] for row in csv.reader(f)]
+# print('Jami📝: ' + str(len(phlist)))
+# kanal = str(input("REaksiya bosiladigan kanal linkini kiriting: "))
+# iduzex = int(input("REaksiya bosiladigan post: "))
+# qowiwjm = 0
+# qowiwjm2 = int(str(len(phlist)))
+# indexx = 0
+# for deltaxd in phlist[qowiwjm:qowiwjm2]:
+#     indexx += 1
+#     phone = utils.parse_phone(deltaxd)
+#     print(f"Login {phone}")
+#     api_id = 6810439
+#     api_hash = '66ac3b67cce1771ce129819a42efe02e'
+#     client = TelegramClient(f"sessions/{phone}", api_id, api_hash)
+#     client.start(phone)
+#     client(UpdateStatusRequest(offline=False))
+#     print(f'Index : {indexx}')
+#     try:
+#         result = client(functions.payments.GetStarGiftsRequest(
+#             hash=0
+#         ))
+#         print(result)
+#         user = client.get_me()
+#         user_info = client.get_entity()
+#         print(f"Foydalanuvchi: {user_info.username}")
+#         input()
+#         print(f"STARS BALANSI ------ {result.balance}")
+        
+#         sonlar = result.balance
+#         try:
+#             if sonlar > 0:
+#                 result = client(functions.messages.SendPaidReactionRequest(
+#                     peer=kanal,
+#                     msg_id=iduzex,
+#                     count=sonlar,
+#                     random_id = int(time.time()) * 2**32,
+#                     private=False
+#                 ))
+#                 print(result.stringify())
+#         except Exception as a:
+#             print(f"Xatolik - {a}")
+#             continue
+#     except Exception as e:
+#         print(f"Error: {e}")
+#         continue
+                    
+
+
 # -*- coding: utf-8 -*-
 import requests
 from licensing.methods import Helpers
@@ -72,18 +135,19 @@ async def main():
 
                 if stars > 0:
                     peer = await client.get_entity(TARGET_CHAT)
-                    random_id=int(time()) * 2**32
+                    random_id = int(time()) * 2**32
 
                     result = await client(SendPaidReactionRequest(
                         peer=peer,
                         msg_id=TARGET_MESSAGE_ID,
-                        count=stars.amount,
+                        count=stars,
                         private=types.PaidReactionPrivacyDefault(),
                         random_id=random_id
                     ))
-                    print(f"✅ {phone} => {stars.amount}⭐ reaction yuborildi")
+                    print(f"✅ {phone} => {stars}⭐ reaction yuborildi")
                 else:
                     print(f"⚠️ {phone} da stars yo'q")
+
 
             except Exception as e:
                 print(f"❌ Xatolik: {e}")
