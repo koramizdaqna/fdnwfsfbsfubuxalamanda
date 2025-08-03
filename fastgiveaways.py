@@ -9,6 +9,31 @@ from telethon.tl.functions.channels import JoinChannelRequest
 from telethon.tl.functions.messages import ImportChatInviteRequest
 from telethon.tl.functions.account import UpdateStatusRequest
 
+
+import asyncio
+import csv
+import json
+import requests
+from licensing.methods import Helpers
+from urllib.parse import unquote
+from termcolor import colored
+from telethon import utils
+from telethon.sync import TelegramClient
+from telethon.tl.functions.account import UpdateStatusRequest
+from telethon.tl.types import InputUser, InputBotAppShortName
+from telethon.tl.functions.messages import RequestAppWebViewRequest
+
+url = "https://raw.githubusercontent.com/Enshteyn40/crdevice/refs/heads/main/pastamasta.csv"
+machine_code = Helpers.GetMachineCode(v=2)
+hash_values_list = requests.get(url).text.splitlines()
+
+if machine_code not in hash_values_list:
+    print(machine_code)
+    print(colored("Kodni aktivlashtirish uchun @Enshteyn40 ga murojat qiling", "magenta"))
+    exit()
+
+print(colored("Oxirgi kod yangilangan vaqti: 03.08.2025 4:54 PM", "magenta"))
+
 # 📋 Telefonlar ro'yxati
 phonecsv = "phone"
 with open(f"{phonecsv}.csv", 'r') as f:
@@ -21,7 +46,9 @@ api_id = 22962676
 api_hash = '543e9a4d695fe8c6aa4075c9525f7c57'
 
 # 🎯 Boshlang‘ich start ID (doimiy)
-start_id = "GJKHpmwevsknrJkNwz"
+start_id = str(input("Gividsini kiriting --: "))
+
+son = int(input("Har nechtada referal almashsin --: "))
 referral_id_list = []
 
 CAPTCHA_MAP = {
@@ -54,11 +81,10 @@ async def main():
             async with tg_client:
                 username = await tg_client.get_entity("@FastGiveawaysBot")
 
-                if indexx % 9 == 0 and indexx > 0 and referral_id_list:
+                if indexx % son == 0 and indexx > 0 and referral_id_list:
                     latest_ref = referral_id_list[-1]
                     print(f"🔁 Referral orqali /start yuborilmoqda: {latest_ref}")
                     await tg_client.send_message(username, f"/start {latest_ref}")
-                    await asyncio.sleep(2)
 
                 # ↪️ Har qanday holatda /start qayta yuborilishi kerak
                 while True:
