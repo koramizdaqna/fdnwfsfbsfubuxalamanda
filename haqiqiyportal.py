@@ -163,11 +163,11 @@ async def process_phone(phone, idx):
             headers = {
                 "accept": "application/json",
                 "authorization": f'tma {init_data}',
-                "referer": f"https://portals-market.com/giveaway/{giveaway_code}",
+                "referer": f"https://portal-market.com/giveaway/{giveaway_code}",
                 "user-agent": "Mozilla/5.0"
             }
 
-            r = requests.get(f"https://portals-market.com/api/giveaways/{giveaway_code}", headers=headers, timeout=10)
+            r = requests.get(f"https://portal-market.com/api/giveaways/{giveaway_code}", headers=headers, timeout=10)
             if r.status_code != 200:
                 print(colored(f"[{giveaway_code}] ❌ Status: {r.status_code}", "red"))
                 continue
@@ -180,7 +180,7 @@ async def process_phone(phone, idx):
                 print(colored("⛔ Giveaway aktiv emas.", "red"))
                 continue
 
-            r = requests.get(f"https://portals-market.com/api/giveaways/{giveaway_code}/requirements", headers=headers, timeout=10)
+            r = requests.get(f"https://portal-market.com/api/giveaways/{giveaway_code}/requirements", headers=headers, timeout=10)
             if r.status_code != 200:
                 print(colored(f"[{giveaway_code}] ❌ Status: {r.status_code}", "red"))
                 continue
@@ -198,9 +198,9 @@ async def process_phone(phone, idx):
                     except Exception as e:
                         print(colored(f"❌ Kanal xatolik: {e}", "red"))
 
-                requests.post(f"https://portals-market.com/api/giveaways/{giveaway_code}/join", headers=headers, timeout=10)
+                requests.post(f"https://portal-market.com/api/giveaways/{giveaway_code}/join", headers=headers, timeout=10)
                 
-                req_after = requests.get(f"https://portals-market.com/api/giveaways/{giveaway_code}/requirements", headers=headers, timeout=10)
+                req_after = requests.get(f"https://portal-market.com/api/giveaways/{giveaway_code}/requirements", headers=headers, timeout=10)
                 if req_after.status_code == 200:
                     req_a = req_after.json()
                     if req_a.get("is_already_participating", False):
