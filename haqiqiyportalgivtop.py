@@ -90,7 +90,7 @@ async def main():
         "user-agent": "Mozilla/5.0"
     }
 
-    r = requests.get(f"https://portals-market.com/api/giveaways/?offset=0&limit=2000&status=active", headers=headers, timeout=30)
+    r = requests.get(f"https://portal-market.com/api/giveaways/?offset=0&limit=2000&status=active", headers=headers, timeout=30)
     if r.status_code != 200:
         print(color(f"❌ Status: {r.status_code}", "red"))
         return
@@ -119,7 +119,7 @@ async def main():
 
         # 🔎 min_volume tekshirish
         req_r = requests.get(
-            f"https://portals-market.com/api/giveaways/{gid}/requirements",
+            f"https://portal-market.com/api/giveaways/{gid}/requirements",
             headers=headers, timeout=10
         )
         if req_r.status_code != 200:
