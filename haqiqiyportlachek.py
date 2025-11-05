@@ -106,7 +106,7 @@ async def process_phone(parsed_phone):
     }
 
     r = requests.post(
-        "https://portals-market.com/api/nfts/transfer-gifts",
+        "https://portal-market.com/api/nfts/transfer-gifts",
         headers=headers,
         json=payload,
         timeout=10
