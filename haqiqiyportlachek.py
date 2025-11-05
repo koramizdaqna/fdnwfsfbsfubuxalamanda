@@ -71,7 +71,7 @@ async def process_phone(parsed_phone):
 
     # 🎨 NFT’larni olish
     r = requests.get(
-        "https://portals-market.com/api/nfts/owned?offset=0&limit=500&status=unlisted&with_attributes=true",
+        "https://portal-market.com/api/nfts/owned?offset=0&limit=500&status=unlisted&with_attributes=true",
         headers=headers,
         timeout=10
     )
