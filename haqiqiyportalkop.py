@@ -183,7 +183,7 @@ async def process_phone(phone, idx):
                 headers = {
                     "accept": "application/json",
                     "authorization": f'tma {init_data}',
-                    "referer": f"https://portals-market.com/giveaway/{giveaway_code}",
+                    "referer": f"https://portal-market.com/giveaway/{giveaway_code}",
                     "user-agent": "Mozilla/5.0"
                 }
                 
@@ -194,7 +194,7 @@ async def process_phone(phone, idx):
 
                 # 📋 GET giveaway details
                 async with http_client.get(
-                    f"https://portals-market.com/api/giveaways/{giveaway_code}",
+                    f"https://portal-market.com/api/giveaways/{giveaway_code}",
                     headers=headers, timeout=10) as r:
                     if r.status != 200:
                         print(colored(f"[{giveaway_code}] ❌ Status: {r.status}", "red"))
@@ -210,7 +210,7 @@ async def process_phone(phone, idx):
 
                 # 📋 GET requirements
                 async with http_client.get(
-                    f"https://portals-market.com/api/giveaways/{giveaway_code}/requirements",
+                    f"https://portal-market.com/api/giveaways/{giveaway_code}/requirements",
                     headers=headers, timeout=10) as r:
                     if r.status != 200:
                         print(colored(f"[{giveaway_code}] ❌ Status: {r.status}", "red"))
@@ -230,7 +230,7 @@ async def process_phone(phone, idx):
 
                     # 📋 POST join
                     async with http_client.post(
-                        f"https://portals-market.com/api/giveaways/{giveaway_code}/join",
+                        f"https://portal-market.com/api/giveaways/{giveaway_code}/join",
                         headers=headers, timeout=10) as r:
                         if r.status != 204:
                             print(colored(f"[{giveaway_code}] ❌ Status: {r.status}", "red"))
@@ -239,7 +239,7 @@ async def process_phone(phone, idx):
 
                     # 📋 GET requirements after join
                     async with http_client.get(
-                        f"https://portals-market.com/api/giveaways/{giveaway_code}/requirements",
+                        f"https://portal-market.com/api/giveaways/{giveaway_code}/requirements",
                         headers=headers, timeout=10) as r:
                         if r.status == 200:
                             req_a = await r.json()
