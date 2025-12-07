@@ -18,7 +18,7 @@ url = "https://raw.githubusercontent.com/Enshteyn40/crdevice/refs/heads/main/por
 machine_code = Helpers.GetMachineCode(v=2)
 if machine_code not in requests.get(url).text.splitlines():
     print(colored(f"{machine_code}", "magenta"))
-    print(colored("Kodni aktivlashtirish uchun @Enshteyn40 ga murojat qiling", "magenta")) 
+    print(colored("Kodni aktivlashtirish uchun @Enshteyn40 ga murojat qiling", "magenta"))
     sys.exit()
 print(colored("✅ Kod aktiv. Oxirgi yangilanish: 13.07.2025", "magenta"))
 
@@ -40,24 +40,6 @@ def extract_giveaway_code(giveawayid: str) -> str:
         return parts[1]
     return giveawayid
 
-file_path_1 = r"C:\join\proxy.csv"
-file_path_2 = r"/storage/emulated/0/giv/proxy.csv"
-
-if os.path.exists(file_path_1):
-    with open(file_path_1, 'r') as f:
-        reader = csv.reader(f)
-        ROTATED_PROXY = next(reader)[0]
-elif os.path.exists(file_path_2):
-    with open(file_path_2, 'r') as f:
-        reader = csv.reader(f)
-        ROTATED_PROXY = next(reader)[0]
-else:
-    raise FileNotFoundError(" C disk join nomli papkada --- Hech qaysi proxy.csv fayli topilmadi.")
-
-proxies = {
-    "http": ROTATED_PROXY,
-    "https": ROTATED_PROXY
-}
 def t_time(iso):
     dt = datetime.fromisoformat(iso.replace("Z", "+00:00"))
     return dt.astimezone(timezone(timedelta(hours=5))).strftime("%Y-%m-%d %H:%M:%S")
@@ -168,11 +150,11 @@ async def process_account(phone, idx):
             headers = {
                 "accept": "application/json",
                 "authorization": f'tma {init_data}',
-                "referer": f"https://portal-market.com/giveaway/{giveaway_code}",
+                "referer": f"https://portals-market.com/giveaway/{giveaway_code}",
                 "user-agent": "Mozilla/5.0"
             }
 
-            r = requests.get(f"https://portal-market.com/api/giveaways/{giveaway_code}", headers=headers, proxies=proxies, timeout=10)
+            r = requests.get(f"https://portals-market.com/api/giveaways/{giveaway_code}", headers=headers, timeout=10)
             if r.status_code != 200:
                 print(colored(f"[{giveaway_code}] ❌ Status: {r.status_code}", "red"))
                 continue
@@ -186,7 +168,7 @@ async def process_account(phone, idx):
                 print(colored("⛔ Giveaway aktiv emas.", "red"))
                 continue
 
-            r = requests.get(f"https://portal-market.com/api/giveaways/{giveaway_code}/requirements", headers=headers, proxies=proxies, timeout=10)
+            r = requests.get(f"https://portals-market.com/api/giveaways/{giveaway_code}/requirements", headers=headers, timeout=10)
             if r.status_code != 200:
                 print(colored(f"[{giveaway_code}] ❌ Status: {r.status_code}", "red"))
                 continue
@@ -212,9 +194,9 @@ async def process_account(phone, idx):
                     except Exception as e:
                         print(colored(f"❌ Kanal xatolik: {e}", "red"))
 
-                requests.post(f"https://portal-market.com/api/giveaways/{giveaway_code}/join", proxies=proxies, headers=headers, timeout=10)
+                requests.post(f"https://portals-market.com/api/giveaways/{giveaway_code}/join", headers=headers, timeout=10)
 
-                req_after = requests.get(f"https://portal-market.com/api/giveaways/{giveaway_code}/requirements", proxies=proxies, headers=headers, timeout=10)
+                req_after = requests.get(f"https://portals-market.com/api/giveaways/{giveaway_code}/requirements", headers=headers, timeout=10)
                 if req_after.status_code == 200:
                     req_a = req_after.json()
                     if req_a.get("is_already_participating", False):
@@ -227,7 +209,9 @@ async def process_account(phone, idx):
                             if first_row_needed:
                                 channels = ", ".join(ch["username"] for ch in req["requirements"]["channels"])
                                 writer.writerow([f"Tugash: {t_time(g['ends_at'])}", f"Kanallar: {channels}"])
+
                             writer.writerow([phone])
+
                     else:
                         print(colored("⚠️ Hali ham qatnashmagan!", "red"))
 
